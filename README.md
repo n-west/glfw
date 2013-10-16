@@ -61,6 +61,8 @@ The following dependencies are needed by the examples and test programs:
                  that at least one CRTC was present
  - [X11] Bugfix: A stale `_NET_SUPPORTING_WM_CHECK` root window property would
                  cause an uncaught `BadWindow` error
+ - [X11] Bugfix: Joysticks connected after `glfwInit` were not detected
+                 (temporary inotify solution until proper libudev solution)
 
 
 ## Contact
