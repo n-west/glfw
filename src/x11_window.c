@@ -1258,6 +1258,23 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
     XFlush(_glfw.x11.display);
 }
 
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int width, int height)
+{
+    if (window->monitor)
+    {
+        leaveFullscreenMode(window);
+        _glfwInputWindowMonitorChange(window, NULL);
+    }
+
+    if (monitor)
+    {
+        _glfwInputWindowMonitorChange(window, monitor);
+        enterFullscreenMode(window);
+    }
+}
+
 void _glfwPlatformPollEvents(void)
 {
     int count = XPending(_glfw.x11.display);

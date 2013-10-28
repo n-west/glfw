@@ -41,6 +41,10 @@
 
 #include "getopt.h"
 
+// Default dimensions for our windowed mode window
+#define WINDOW_WIDTH  640
+#define WINDOW_HEIGHT 480
+
 // These must match the input mode defaults
 static GLboolean closeable = GL_TRUE;
 
@@ -369,6 +373,33 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             printf("(( closing %s ))\n", closeable ? "enabled" : "disabled");
             break;
         }
+
+        case GLFW_KEY_ENTER:
+        {
+            if (mods == GLFW_MOD_ALT)
+            {
+                if (glfwGetWindowMonitor(window))
+                {
+                    printf("(( switching to %ix%i windowed mode ))\n",
+                           WINDOW_WIDTH, WINDOW_HEIGHT);
+
+                    glfwSetWindowMonitor(window, NULL, WINDOW_WIDTH, WINDOW_HEIGHT);
+                }
+                else
+                {
+                    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+                    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+                    printf("(( switching to %ix%i full screen mode on %s ))\n",
+                           mode->width, mode->height,
+                           glfwGetMonitorName(monitor));
+
+                    glfwSetWindowMonitor(window, monitor, mode->width, mode->height);
+                }
+            }
+
+            break;
+        }
     }
 }
 
@@ -443,7 +474,8 @@ int main(int argc, char** argv)
         }
     }
 
-    window = glfwCreateWindow(640, 480, "Event Linter", monitor, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT,
+                              "Event Linter", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

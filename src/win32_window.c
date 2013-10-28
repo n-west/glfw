@@ -1103,6 +1103,12 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
     ShowWindow(window->win32.handle, SW_HIDE);
 }
 
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int width, int height)
+{
+}
+
 void _glfwPlatformPollEvents(void)
 {
     MSG msg;
