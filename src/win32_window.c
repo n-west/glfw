@@ -1208,16 +1208,15 @@ void _glfwPlatformApplyCursorMode(_GLFWwindow* window)
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx, int cy,
                               int format, const void* data)
 {
-    HDC hdc;
-    HBITMAP hBitmap, hMonoBitmap;
+    HDC dc;
+    HBITMAP bitmap, mask;
     BITMAPV5HEADER bi;
     ICONINFO ii;
-    DWORD *buffer = 0;
-    BYTE *image = (BYTE*) data;
-    int i, size = width * height;
+    DWORD* buffer = 0;
+    BYTE* image = (BYTE*) data;
+    int i;
 
-    ZeroMemory(&bi, sizeof(BITMAPV5HEADER));
-
+    ZeroMemory(&bi, sizeof(bi));
     bi.bV5Size        = sizeof(BITMAPV5HEADER);
     bi.bV5Width       = width;
     bi.bV5Height      = -height;
@@ -1229,39 +1228,37 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor, int width, int height, int cx
     bi.bV5BlueMask    = 0x000000FF;
     bi.bV5AlphaMask   = 0xFF000000;
 
-    hdc = GetDC(NULL);
+    dc = GetDC(NULL);
+    bitmap = CreateDIBSection(dc, (BITMAPINFO*) &bi, DIB_RGB_COLORS,
+                              (void**) &buffer, NULL, (DWORD) 0);
+    ReleaseDC(NULL, dc);
 
-    hBitmap = CreateDIBSection(hdc, (BITMAPINFO*) &bi, DIB_RGB_COLORS, (void**) &buffer,
-                               NULL, (DWORD) 0);
-
-    ReleaseDC(NULL, hdc);
-
-    if (hBitmap == NULL)
+    if (!bitmap)
         return GL_FALSE;
 
-    hMonoBitmap = CreateBitmap(width, height, 1, 1, NULL);
-
-    if (hMonoBitmap == NULL)
+    mask = CreateBitmap(width, height, 1, 1, NULL);
+    if (!mask)
     {
-        DeleteObject(hBitmap);
+        DeleteObject(bitmap);
         return GL_FALSE;
     }
 
-    for (i = 0; i < size; i++, buffer++, image += 4)
+    for (i = 0;  i < width * height;  i++, buffer++, image += 4)
         *buffer = (image[3] << 24) | (image[0] << 16) | (image[1] << 8) | image[2];
 
-    ii.fIcon = FALSE;
+    ZeroMemory(&ii, sizeof(ii));
+    ii.fIcon    = FALSE;
     ii.xHotspot = cx;
     ii.yHotspot = cy;
-    ii.hbmMask = hMonoBitmap;
-    ii.hbmColor = hBitmap;
+    ii.hbmMask  = mask;
+    ii.hbmColor = bitmap;
 
     cursor->win32.handle = (HCURSOR) CreateIconIndirect(&ii);
 
-    DeleteObject(hBitmap);
-    DeleteObject(hMonoBitmap);
+    DeleteObject(bitmap);
+    DeleteObject(mask);
 
-    if (cursor->win32.handle == NULL)
+    if (!cursor->win32.handle)
         return GL_FALSE;
 
     return GL_TRUE;
