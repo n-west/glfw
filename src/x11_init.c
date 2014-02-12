@@ -369,13 +369,12 @@ static void detectEWMH(void)
                                (unsigned char**) &windowFromChild) != 1)
     {
         XFree(windowFromRoot);
-        XFree(windowFromChild);
+        if (windowFromChild)
+            XFree(windowFromChild);
         return;
     }
 
     _glfwReleaseXErrorHandler();
-    if (_glfw.x11.errorCode != Success)
-        return;
 
     // It should be the ID of that same child window
     if (*windowFromRoot != *windowFromChild)
