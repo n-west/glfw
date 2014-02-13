@@ -1399,6 +1399,20 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
  */
 GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
 
+/*! @brief Sets the size limits of the specified window.
+ *
+ *  This function sets the size limits of the specified window.
+ *
+ *  @param[in] window The window to set limits for.
+ *  @param[in] minwidth The minimum width, in pixels, of the client area.
+ *  @param[in] minwidth The minimum width, in pixels, of the client area.
+ *  @param[in] maxwidth The maximum width, in pixels, of the client area.
+ *  @param[in] maxwidth The maximum width, in pixels, of the client area.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);
+
 /*! @brief Sets the size of the client area of the specified window.
  *
  *  This function sets the size, in screen coordinates, of the client area of
