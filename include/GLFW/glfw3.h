@@ -801,15 +801,24 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char**);
  */
 typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
 
-/* @brief Raw image data.
- * @note The data member must point to width * height * 4 bytes of 8bits RGBA data, bottom to top, left to right.
+/* @brief Image data.
+ *
+ * This describes a 2D image data member must point to width * height * 4 bytes
+ * of 8bits RGBA data, bottom to top, left to right.
+ *
  * @ingroup window
  */
 typedef struct
 {
-    unsigned char *data;
+    /*! The width, in pixels, of this image.
+     */
     int width;
+    /*! The height, in pixels, of this image.
+     */
     int height;
+    /*! The pixel data of this image.
+     */
+    unsigned char* data;
 } GLFWimage;
 
 /*! @brief Video mode type.
@@ -1452,23 +1461,28 @@ GLFWAPI void glfwSetWindowSize(GLFWwindow* window, int width, int height);
  */
 GLFWAPI void glfwGetFramebufferSize(GLFWwindow* window, int* width, int* height);
 
-/*! @brief Sets the application icons to use for the given window.
+/*! @brief Sets the icons for the specified window.
+ *
+ *  This function sets the icons to be used by the specified window.
+ *
  *  @param[in] window The window to set the icons for.
- *  @param[in] icons A pointer to the first element of an array of GLFWimage structs.
- *  @param[in] numicons The number of icons in the given array.
- *  @ingroup window
+ *  @param[in] icons An array of @ref GLFWimage structs.
+ *  @param[in] count The number of icons in the array.
  *
  *  @note This function may only be called from the main thread.
  *
- *  @note From all the given icons GLFW will automatically pick the most appropriate
- *  size for the different locations in which the application icon can occur. For
- *  example on Windows, if a larger and a smaller icon are given the larger icon
- *  will be used for the ALT-TAB screen and the smaller for the taskbar.
+ *  @note From all the given icons GLFW will automatically pick the most
+ *  appropriate size for the different locations in which the application icon
+ *  can occur. For example on Windows, if a larger and a smaller icon are given
+ *  the larger icon will be used for the Alt+Tab screen and the smaller for the
+ *  taskbar.
  *
- *  @note If the icon does not exactly fit the operating systems requirements for the
- *  icon size the icon will be automatically resized.
+ *  @note If the icon does not exactly fit the operating systems requirements
+ *  for the icon size the icon will be automatically resized.
+ *
+ *  @ingroup window
  */
-GLFWAPI void glfwSetWindowIcons(GLFWwindow* window, GLFWimage* icons, int numicons);
+GLFWAPI void glfwSetWindowIcons(GLFWwindow* window, GLFWimage* icons, int count);
 
 /*! @brief Iconifies the specified window.
  *

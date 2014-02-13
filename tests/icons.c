@@ -34,7 +34,7 @@
 #include <string.h>
 
 // a simple glfw logo
-const char * const logo[] = {
+const char* const logo[] = {
     "................",
     "................",
     "...0000..0......",
@@ -54,16 +54,17 @@ const char * const logo[] = {
 };
 
 const unsigned char icon_colors[5][4] = {
-    {0x00, 0x00, 0x00, 0xff}, // black
-    {0xff, 0x00, 0x00, 0xff}, // red
-    {0x00, 0xff, 0x00, 0xff}, // green
-    {0xff, 0x00, 0xff, 0xff}, // blue
-    {0xff, 0xff, 0xff, 0xff} // white
+    { 0x00, 0x00, 0x00, 0xff }, // black
+    { 0xff, 0x00, 0x00, 0xff }, // red
+    { 0x00, 0xff, 0x00, 0xff }, // green
+    { 0xff, 0x00, 0xff, 0xff }, // blue
+    { 0xff, 0xff, 0xff, 0xff } // white
 };
 
 static int cur_icon_color = 0;
 
-static void set_icon(GLFWwindow* window, int icon_color) {
+static void set_icon(GLFWwindow* window, int icon_color)
+{
     GLFWimage img;
     int x, y;
 
@@ -71,7 +72,7 @@ static void set_icon(GLFWwindow* window, int icon_color) {
     img.width = 16;
     img.height = 16;
     img.data = malloc(img.width * img.height * 4);
-    
+
     if (!img.data)
     {
         glfwTerminate();
@@ -80,17 +81,15 @@ static void set_icon(GLFWwindow* window, int icon_color) {
         exit(EXIT_FAILURE);
     }
 
-    for (x = 0; x < 16; ++x)
+    for (x = 0;  x < 16;  x++)
     {
-        for (y = 0; y < 16; ++y)
+        for (y = 0;  y < 16;  y++)
         {
             // 15 - y because we need to flip the icon
             if (logo[15 - y][x] == '0')
-            {
                 memcpy(img.data + 4 * (x + y * img.width), icon_colors[icon_color], 4);
-            } else {
+            else
                memset(img.data + 4 * (x + y * img.width), 0, 4); // transparency
-            }
         }
     }
 
@@ -114,7 +113,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
     }
 }
-
 
 int main(int argc, char** argv)
 {
@@ -145,6 +143,6 @@ int main(int argc, char** argv)
     }
 
     glfwTerminate();
-    
-    return EXIT_SUCCESS;
+    exit(EXIT_SUCCESS);
 }
+

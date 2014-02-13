@@ -938,10 +938,8 @@ static void destroyWindow(_GLFWwindow* window)
     }
 }
 
-//========================================================================
 // Creates a Windows icon from a GLFWimage
-//========================================================================
-
+//
 static HICON createIcon(GLFWimage* image)
 {
     BITMAPV5HEADER header;
@@ -972,16 +970,12 @@ static HICON createIcon(GLFWimage* image)
 
     // first we need to convert RGBA to BGRA (yay Windows!)
     // we also need to convert lines, because Windows wants bottom-to-top RGBA
-    BGRAData = malloc(image->width * image->height * 4);
-    if (!BGRAData)
-    {
-        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-        return NULL;
-    }
+    BGRAData = calloc(1, image->width * image->height * 4);
 
-    for (i = 0; i < image->width * image->height; i++) {
-        unsigned char *dst = BGRAData + 4 * i;
-        unsigned char *src = image->data + 4 * i;
+    for (i = 0;  i < image->width * image->height;  i++)
+    {
+        unsigned char* dst = BGRAData + 4 * i;
+        unsigned char* src = image->data + 4 * i;
 
         dst[0] = src[2]; // copy blue channel
         dst[1] = src[1]; // copy green channel
@@ -1012,23 +1006,19 @@ static HICON createIcon(GLFWimage* image)
     return icon;
 }
 
-//========================================================================
 // Chooses the best fitting image given the images and desired size
-//========================================================================
-
-static GLFWimage* bestFit(GLFWimage *icons, const int numicons, const int targetWidth, const int targetHeight)
+//
+static GLFWimage* bestFit(GLFWimage* icons, const int count, const int targetWidth, const int targetHeight)
 {
-    GLFWimage *curIcon = icons;
-    GLFWimage *bestIcon = curIcon;
+    GLFWimage* curIcon = icons;
+    GLFWimage* bestIcon = curIcon;
     const double targetRatio = (double) targetWidth / targetHeight;
 
-    while (curIcon < icons + numicons)
+    while (curIcon < icons + count)
     {
         // always use exact match
         if (curIcon->width == targetWidth && curIcon->height == targetHeight)
-        {
             return curIcon;
-        }
 
         // at least wide or high enough, ratio preferably as close as possible
         if (curIcon->width >= targetWidth || curIcon->height >= targetHeight)
@@ -1039,14 +1029,10 @@ static GLFWimage* bestFit(GLFWimage *icons, const int numicons, const int target
             double bestDelta = targetRatio - bestRatio;
 
             if (curDelta < 0)
-            {
                 curDelta = -curDelta;
-            }
-    
+
             if (bestDelta < 0)
-            {
                 bestDelta = -bestDelta;
-            }
 
             // if our ratio is closer OR if the best icon so far isn't large
             // enough we'll become the new best icon
@@ -1062,16 +1048,15 @@ static GLFWimage* bestFit(GLFWimage *icons, const int numicons, const int target
         else if (bestIcon->width < targetWidth && bestIcon->height < targetHeight)
         {
             if (curIcon->width * curIcon->height > bestIcon->width * bestIcon->height)
-            {
                 bestIcon = curIcon;
-            }
         }
-        
-        ++curIcon;
+
+        curIcon++;
     }
-            
+
     return bestIcon;
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -1224,17 +1209,13 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
     _glfwPlatformGetWindowSize(window, width, height);
 }
 
-//========================================================================
-// Set the window icon(s)
-//========================================================================
-
-void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage *icons, int numicons)
+void _glfwPlatformSetWindowIcons(_GLFWwindow* window, GLFWimage* icons, int count)
 {
     GLFWimage* normalicon;
     GLFWimage* smallicon;
 
-    normalicon = bestFit(icons, numicons, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
-    smallicon = bestFit(icons, numicons, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+    normalicon = bestFit(icons, count, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+    smallicon = bestFit(icons, count, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
 
     SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) createIcon(normalicon));
     SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) createIcon(smallicon));
