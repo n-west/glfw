@@ -54,7 +54,7 @@ if (MSVC)
 
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES
-                          LINK_FLAGS "/ENTRY:mainCRTStartup")
+                          LINK_FLAGS "-lpthread /ENTRY:mainCRTStartup")
 endif()
 
 if (APPLE)
